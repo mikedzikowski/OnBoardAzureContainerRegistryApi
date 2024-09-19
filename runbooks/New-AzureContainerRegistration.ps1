@@ -75,7 +75,7 @@ begin {
     }
     try
     {
-        $AzureContext = (Connect-AzAccount -Identity).context
+        $AzureContext =  (Connect-AzAccount -Identity -Environment $Environment -SubscriptionId $subscriptionId).context
         # set and store context
         $AzureContext = Set-AzContext -SubscriptionName $AzureContext.Subscription -DefaultProfile $AzureContext
         # Authenticate to Azure 
