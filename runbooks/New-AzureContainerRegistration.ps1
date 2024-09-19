@@ -75,9 +75,13 @@ begin {
     }
     try
     {
+        $AzureContext = (Connect-AzAccount -Identity).context
+        # set and store context
+        $AzureContext = Set-AzContext -SubscriptionName $AzureContext.Subscription -DefaultProfile $AzureContext
         # Authenticate to Azure 
-        $spPassword = $ServicePrincipalPw
-        $servicePrincipalAppID = $ApplicationId 
+        $myCred = Get-AutomationPSCredential -Name "credentialName"
+        $spPassword = $myCred.Password
+        $servicePrincipalAppID = $myCred.UserName
         $password = ConvertTo-SecureString $spPassword -AsPlainText -Force
         $psCredentials = New-Object System.Management.Automation.PSCredential ($servicePrincipalAppID, $password)
         Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -ServicePrincipal -Credential $psCredentials
