@@ -7,7 +7,7 @@ param location string = deployment().location
 param deploymentNameSuffix string = utcNow()
 
 @description('The name of the resource group.')
-param resourceGroupName string = 'rg-acr-${uniqueString(deployment().name)}'
+param resourceGroupName string = 'rg-acr-cs'
 
 @description('The name of the service principal.')
 param spName string

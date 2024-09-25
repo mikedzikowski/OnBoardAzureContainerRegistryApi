@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "11274186617967238751"
+      "templateHash": "11778775732680043731"
     }
   },
   "parameters": {
@@ -25,7 +25,7 @@
     },
     "resourceGroupName": {
       "type": "string",
-      "defaultValue": "[format('rg-acr-{0}', uniqueString(deployment().name))]",
+      "defaultValue": "rg-acr-cs",
       "metadata": {
         "description": "The name of the resource group."
       }
