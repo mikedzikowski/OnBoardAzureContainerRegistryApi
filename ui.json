@@ -131,8 +131,7 @@
                 "spName": "[steps('serviceprincipal').ServicePrincipal.name]",
                 "spPassword": "[steps('serviceprincipal').ServicePrincipal.password]",
                 "falconClientId": "[steps('falcon').cid]",
-                "falconClientSecret": "[steps('falcon').secret]",
-                "resourceGroupName": "[steps('basics').resourceScope.resourceGroup.name]"
+                "falconClientSecret": "[steps('falcon').secret]"
             }
         }
     }
