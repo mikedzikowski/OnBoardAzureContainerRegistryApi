@@ -3,7 +3,6 @@
     "view": {
         "kind": "Form",
         "properties": {
-            "isWizard": true,
             "title": "Onboard Azure Container Registry to Falcon Cloud Security",
             "steps": [
                 {
@@ -12,12 +11,17 @@
                     "elements": [
                         {
                             "name": "resourceScope",
-                            "type": "Microsoft.Common.ResourceScope"
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": [
+                                    "microsoft.resources/resourcegroups"
+                                ]
+                            }
                         }
                     ]
                 },
                 {
-                    "name": "serviceprincipal",
+                    "name": "sp",
                     "label": "Service Principal",
                     "elements": [
                         {
@@ -121,16 +125,14 @@
         },
         "outputs": {
             "kind": "Subscription",
+            "subscriptionId": "[steps('basics').resourceScope.subscription.id]",
             "location": "[steps('basics').resourceScope.location.name]",
-            "resourceGroupId": "[steps('basics').resourceScope.resourceGroup.id]",
             "parameters": {
-                "location": "[steps('basics').resourceScope.location.name]",
                 "tagsByResource": "[steps('tags').tagsByResource]",
-                "spName": "[steps('serviceprincipal').ServicePrincipal.name]",
-                "spPassword": "[steps('serviceprincipal').ServicePrincipal.password]",
+                "spName": "[steps('sp').ServicePrincipal.appName]",
+                "spPassword": "[steps('sp').ServicePrincipal.password]",
                 "falconClientId": "[steps('falcon').cid]",
-                "falconClientSecret": "[steps('falcon').secret]",
-                "SubscriptionId": "[subscription().subscriptionId]"
+                "falconClientSecret": "[steps('falcon').secret]"
             }
         }
     }

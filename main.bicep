@@ -23,13 +23,12 @@ param falconClientId string
 @secure()
 param falconClientSecret string
 
-param subscriptionId string
 
 // variables for the deployment
 var automationAccountName = 'aa-acr-${uniqueString(rg.id)}'
 var cloud = environment().name
 var tenantId = tenant().tenantId
-// var subscriptionId = subscription().subscriptionId
+var subscriptionId = subscription().subscriptionId
 var psFalconUri = 'https://www.powershellgallery.com/api/v2/package/PSFalcon/2.2.7'
 var psFalconVersion = '2.2.7'
 var runbook = [
