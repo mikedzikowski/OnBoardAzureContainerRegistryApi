@@ -47,6 +47,7 @@
                                 "name": "(New) default App Id"
                             },
                             "constraints": {
+                                "required": false
                             },
                             "options": {
                                 "hideCertificate": true
