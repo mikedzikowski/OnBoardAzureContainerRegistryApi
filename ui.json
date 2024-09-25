@@ -1,0 +1,119 @@
+{
+    "$schema": "<relative path to createFormUI.schema.json>",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "isWizard": true,
+            "title": "Onboard Azure Container Registry to Falcon Cloud Security",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Basics",
+                    "elements": [
+                        {
+                            "name": "resourceScope",
+                            "type": "Microsoft.Common.ResourceScope"
+                        }
+                    ]
+                },
+                {
+                    "name": "serviceprincipal",
+                    "label": "Service Principal",
+                    "elements": [
+                        {
+                            "name": "ServicePrincipal",
+                            "type": "Microsoft.Common.ServicePrincipalSelector",
+                            "label": {
+                                "password": "Password",
+                                "authenticationType": "Authentication Type",
+                                "sectionHeader": "Service Principal"
+                            },
+                            "toolTip": {
+                                "password": "Password",
+                                "authenticationType": "Authentication Type"
+                            },
+                            "defaultValue": {
+                                "principalId": "<default guid>",
+                                "name": "(New) default App Id"
+                            },
+                            "constraints": {
+                                "required": true,
+                                "regex": "^[a-zA-Z0-9]{8,}$",
+                                "validationMessage": "Password must be at least 8 characters long, contain only numbers and letters"
+                            },
+                            "options": {
+                                "hideCertificate": true
+                            },
+                            "visible": true
+                        }
+                    ]
+                },
+                {
+                    "name": "falcon",
+                    "label": "Falcon Cloud Security Information",
+                    "elements": [
+                        {
+                            "name": "cid",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Falcon CID",
+                            "defaultValue": "",
+                            "toolTip": "Use only allowed characters",
+                            "placeholder": "",
+                            "multiLine": false,
+                            "constraints": {
+                                "required": true,
+                                "validations": [
+                                    {}
+                                ]
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "secret",
+                            "type": "Microsoft.Common.PasswordBox",
+                            "label": {
+                                "password": "Falcon Client Secret"
+                            },
+                            "toolTip": "",
+                            "validations": [
+                                {}
+                            ],
+                            "options": {
+                                "hideConfirmation": true
+                            },
+                            "visible": true
+                        }
+                    ]
+                },
+                {
+                    "name": "tags",
+                    "label": "Tags",
+                    "elements": [
+                        {
+                            "name": "tagsByResource",
+                            "type": "Microsoft.Common.TagsByResource",
+                            "resources": [
+                                "Microsoft.Storage/storageAccounts",
+                                "Microsoft.Compute/virtualMachines"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "kind": "Subscription",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "resourceGroupId": "[steps('basics').resourceScope.resourceGroup.id]",
+            "parameters": {
+                "location": "[steps('basics').resourceScope.location.name]",
+                "tagsByResource": "[steps('tags').tagsByResource]",
+                "spName": "[steps('serviceprincipal').ServicePrincipal.name]",
+                "spPassword": "[steps('serviceprincipal').ServicePrincipal.password]",
+                "falconClientId": "[steps('falcon').cid]",
+                "falconClientSecret": "[steps('falcon').secret]",
+                "resourceGroupName": "[steps('basics').resourceScope.resourceGroup.name]"
+            }
+        }
+    }
+}

@@ -3,9 +3,6 @@ targetScope = 'subscription'
 @description('The location for the resources deployed in this solution.')
 param location string = deployment().location
 
-@description('The name of the automation account.')
-param automationAccountName string
-
 @description('The suffix to be added to the deployment name.')
 param deploymentNameSuffix string = utcNow()
 
@@ -26,9 +23,8 @@ param falconClientId string
 @secure()
 param falconClientSecret string
 
-
-
 // variables for the deployment
+var automationAccountName = 'aa-acr-${uniqueString(rg.id)}'
 var cloud = environment().name
 var tenantId = tenant().tenantId
 var subscriptionId = subscription().subscriptionId
@@ -41,7 +37,6 @@ var runbook = [
   }
 ]
 var arcPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-var arcPushRoleId = '8311e382-0749-4cb8-b61a-304f252e45ec'
 var keyVaultSecretReaderRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
 var azureReaderRoleId = 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
 
@@ -92,15 +87,6 @@ module arcPullRoleAutomationAccount 'modules/rbacPermissions.bicep' = {
   params: {
     principalId: automationAccount.outputs.aaIdentityId
     roleId: arcPullRoleId
-    scope: subscriptionId
-  }
-}
-
-module arcPushRoleAutomationAccount 'modules/rbacPermissions.bicep' = {
-  name: 'rbac-arcPushRole-${deploymentNameSuffix}'
-  params: {
-    principalId: automationAccount.outputs.aaIdentityId
-    roleId: arcPushRoleId
     scope: subscriptionId
   }
 }
