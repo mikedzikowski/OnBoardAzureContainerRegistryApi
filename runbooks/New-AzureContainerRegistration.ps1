@@ -64,15 +64,15 @@ catch
 try 
 {
     # Retrieve secrets from Azure Key Vault
-    $ClientId = (Get-AzKeyVaultSecret -VaultName $VaultName -Name falcon-client-id -AsPlainText)
-    $ClientSecret = (Get-AzKeyVaultSecret -VaultName $VaultName -Name falcon-client-secret -AsPlainText)
-    $kAppId = (Get-AzKeyVaultSecret -VaultName $VaultName -Name app-id -AsPlainText)
-    $kPassword = (Get-AzKeyVaultSecret -VaultName $VaultName -Name app-secret -AsPlainText)
+    $clientId = (Get-AzKeyVaultSecret -VaultName $VaultName -Name falcon-client-id -AsPlainText)
+    $clientSecret = (Get-AzKeyVaultSecret -VaultName $VaultName -Name falcon-client-secret -AsPlainText)
+    $appId = (Get-AzKeyVaultSecret -VaultName $VaultName -Name app-id -AsPlainText)
+    $appSecret = (Get-AzKeyVaultSecret -VaultName $VaultName -Name app-secret -AsPlainText)
 
     # Authenticate to Falcon Cloud Security
     $Token = @{
-    ClientId=$ClientId
-    ClientSecret=$ClientSecret
+    ClientId=$clientId
+    ClientSecret=$clientSecret
     }
 
     Request-FalconToken @Token
@@ -97,8 +97,8 @@ try
         {
             $null = $credentials 
             $credentials = @{
-                "username" = $kAppId
-                "password" = $kPassword
+                "username" = $appId
+                "password" = $appSecret
             }
             if($credentials)
             {

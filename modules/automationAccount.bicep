@@ -32,7 +32,7 @@ resource automationAccount 'Microsoft.Automation/automationAccounts@2021-06-22' 
 }
 
 resource aa 'Microsoft.Automation/automationAccounts@2021-06-22' existing = {
-  name: automationAccountName
+  name: automationAccount.name
 }
 
 resource runbookDeployment 'Microsoft.Automation/automationAccounts/runbooks@2019-06-01' = [for (runbook, i) in runbookNames: {
@@ -66,7 +66,7 @@ resource schedule 'Microsoft.Automation/automationAccounts/schedules@2023-11-01'
 resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2023-11-01' = {
   #disable-next-line use-stable-resource-identifiers
   name: guid(now)
-  parent: automationAccount
+  parent: aa
   properties:{
     parameters: {
       environment: environment
@@ -81,6 +81,9 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2023-
       name: runbookNames[0].name
       }
   }
+  dependsOn: [
+    runbookDeployment
+  ]
 }
 
 resource psFaclonModule 'Microsoft.Automation/automationAccounts/modules@2022-08-08' = {

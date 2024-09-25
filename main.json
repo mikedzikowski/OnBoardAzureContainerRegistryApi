@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "2130212076916315326"
+      "templateHash": "9701236414441717114"
     }
   },
   "parameters": {
@@ -283,7 +283,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "3656109700543945462"
+              "templateHash": "1197828706241419965"
             }
           },
           "parameters": {
@@ -364,7 +364,10 @@
                   "uri": "[parameters('runbookNames')[copyIndex()].uri]",
                   "version": "1.0.0.0"
                 }
-              }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
+              ]
             },
             {
               "type": "Microsoft.Automation/automationAccounts/schedules",
@@ -377,7 +380,10 @@
                 "interval": 1,
                 "startTime": "[dateTimeAdd(format('{0}T{1}', parameters('todayDate'), variables('startTime')), if(greater(dateTimeToEpoch(format('{0}T{1}', parameters('todayDate'), variables('startTime'))), add(variables('nowTicks'), variables('offsetSeconds'))), 'P0D', 'P1D'))]",
                 "timeZone": "Eastern Standard Time"
-              }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
+              ]
             },
             {
               "type": "Microsoft.Automation/automationAccounts/jobSchedules",
@@ -399,6 +405,7 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]",
+                "runbookDeployment",
                 "[resourceId('Microsoft.Automation/automationAccounts/schedules', parameters('automationAccountName'), 'runbookSchedule')]"
               ]
             },
@@ -412,7 +419,10 @@
                   "uri": "[parameters('psFalconUri')]",
                   "version": "[parameters('psFalconVersion')]"
                 }
-              }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
+              ]
             }
           ],
           "outputs": {
