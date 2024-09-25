@@ -129,7 +129,8 @@
                 "spName": "[steps('serviceprincipal').ServicePrincipal.name]",
                 "spPassword": "[steps('serviceprincipal').ServicePrincipal.password]",
                 "falconClientId": "[steps('falcon').cid]",
-                "falconClientSecret": "[steps('falcon').secret]"
+                "falconClientSecret": "[steps('falcon').secret]",
+                "SubscriptionId": "[subscription().subscriptionId]"
             }
         }
     }
