@@ -37,22 +37,6 @@
 using module @{ModuleName = 'PSFalcon'; ModuleVersion = '2.2' }
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory, Position = 1)]
-    [ValidatePattern('^[a-fA-F0-9]{32}$')]
-    [string]$ClientId,
-
-    [Parameter(Mandatory, Position = 2)]
-    [ValidatePattern('^\w{40}$')]
-    [string]$ClientSecret,
-
-    [Parameter(Position = 3)]
-    [ValidatePattern('^[a-fA-F0-9]{32}$')]
-    [string]$MemberCid,
-
-    [Parameter(Position = 4)]
-    [ValidateSet('us-1', 'us-2', 'us-gov-1', 'eu-1')]
-    [string]$Cloud,
-
     [Parameter(Mandatory, Position = 6)]
     [string]$Environment,
 
@@ -62,85 +46,82 @@ param(
     [Parameter(Mandatory, Position = 8)]
     [string]$TenantId,
 
-    [Parameter(Mandatory, Position = 9)]
-    [string]$ServicePrincipalPw,
-
-    [Parameter(Mandatory, Position = 10)]
-    [string]$ApplicationId
+    [Parameter(Mandatory, Position = 11)]
+    [string]$VaultName
 )
-begin {
-    $Token = @{}
-    @('ClientId', 'ClientSecret', 'Cloud', 'MemberCid').foreach{
-        if ($PSBoundParameters.$_) { $Token[$_] = $PSBoundParameters.$_ }
-    }
-    try
-    {
-        $AzureContext =  (Connect-AzAccount -Identity).context
-        # set and store context
-        $AzureContext = Set-AzContext -SubscriptionName $AzureContext.Subscription -DefaultProfile $AzureContext
-        # Authenticate to Azure 
-        $myCred = Get-AutomationPSCredential -Name "credentialName"
-        $spPassword = $myCred.Password
-        $servicePrincipalAppID = $myCred.UserName
-        $password = ConvertTo-SecureString $spPassword -AsPlainText -Force
-        $psCredentials = New-Object System.Management.Automation.PSCredential ($servicePrincipalAppID, $password)
-        Connect-AzAccount -Environment $Environment -Tenant $TenantId -Subscription $SubscriptionId -ServicePrincipal -Credential $psCredentials
-    }
-    catch 
-    {
-        Write-Output "Authentication to Azure failed. Aborting.";
-        throw $_
-    }
-}
-process 
+try
 {
+    # Authenticate to Azure using system assigned managed identity on Automation Account
+    $AzureContext =  (Connect-AzAccount -Identity).context
+    $AzureContext = Set-AzContext -SubscriptionName $AzureContext.Subscription -DefaultProfile $AzureContext
+    Write-Output $AzureContext
+}
+catch 
+{
+    Write-Output "Authentication to Azure failed. Aborting.";
+    throw $_
+}
 try 
+{
+    # Retrieve secrets from Azure Key Vault
+    $ClientId = (Get-AzKeyVaultSecret -VaultName $VaultName -Name falcon-client-id -AsPlainText)
+    $ClientSecret = (Get-AzKeyVaultSecret -VaultName $VaultName -Name falcon-client-secret -AsPlainText)
+    $kAppId = (Get-AzKeyVaultSecret -VaultName $VaultName -Name app-id -AsPlainText)
+    $kPassword = (Get-AzKeyVaultSecret -VaultName $VaultName -Name app-secret -AsPlainText)
+
+    # Authenticate to Falcon Cloud Security
+    $Token = @{
+    ClientId=$ClientId
+    ClientSecret=$ClientSecret
+    }
+
+    Request-FalconToken @Token
+    if ((Test-FalconToken).Token -eq $true) 
     {
-        Request-FalconToken @Token
-        if ((Test-FalconToken).Token -eq $true) 
+        # Get Azure Container Registry in Subscription
+        $azureContainerRegistry = Get-AzContainerRegistry
+        
+        # Get Connected Falcon Container Registry in Falcon Cloud Security
+        $falconRegistryConnections = Get-FalconContainerRegistry 
+        $currentRegistry = @()
+
+        # Retrieve value from Key Vault
+        foreach ($id in $falconRegistryConnections)
         {
-            # Get Azure Container Registry in Subscription
-            $azureContainerRegistry = Get-AzContainerRegistry
-            # Get Connected Falcon Container Registry in Falcon Cloud Security
-            $falconRegistryConnections = Get-FalconContainerRegistry 
-            $currentRegistry = @()
-            foreach ($id in $falconRegistryConnections)
-            {
-                $acrName = (Get-FalconContainerRegistry -id $id).user_defined_alias
-                $currentRegistry += ($acrName)
-                Write-Output "Registry Connection in Falcon Cloud Security: $acrName"
+            $acrName = (Get-FalconContainerRegistry -id $id).user_defined_alias
+            $currentRegistry += ($acrName)
+            Write-Output "Registry Connection in Falcon Cloud Security: $acrName"
+        }
+        # Connect Azure Container Registry to Falcon Cloud Security if not already connected
+        foreach ($registry in $azureContainerRegistry)
+        {
+            $null = $credentials 
+            $credentials = @{
+                "username" = $kAppId
+                "password" = $kPassword
             }
-            # Connect Azure Container Registry to Falcon Cloud Security if not already connected
-            foreach ($registry in $azureContainerRegistry)
+            if($credentials)
             {
-                $null = $credentials 
-                $credentials = @{
-                    "username" = $servicePrincipalAppID
-                    "password" = $ServicePrincipalPw
-                }
-                if($credentials)
+                $loginServer = 'https://' + $registry.LoginServer
+                if($currentRegistry -notcontains $registry.name)
                 {
-                    $loginServer = 'https://' + $registry.LoginServer
-                    if($currentRegistry -notcontains $registry.name)
-                    {
-                        Write-Output "Unconnected registry found: $($registry.name)!"
-                        New-FalconContainerRegistry -Name $registry.Name -Type acr -Credential $credentials -Verbose -Url $loginServer 
-                        Write-Output "Connected $($registry.name) to Falcon Cloud Security"
-                    }
-                    else 
-                    {
-                        Write-Host "Registry $($registry.name) is already connected to Falcon Cloud Security skipping"
-                    }
+                    Write-Output "Unconnected registry found: $($registry.name)!"
+                    New-FalconContainerRegistry -Name $registry.Name -Type acr -Credential $credentials -Verbose -Url $loginServer 
+                    Write-Output "Connected $($registry.name) to Falcon Cloud Security"
+                }
+                else 
+                {
+                    Write-OUtput "Registry $($registry.name) is already connected to Falcon Cloud Security skipping"
                 }
             }
         }
     }
-    catch 
-    {
-        throw $_
-    }
-    finally 
-    {
-        if ((Test-FalconToken).Token -eq $true) { Revoke-FalconToken }
-    }
+}
+catch 
+{
+    throw $_
+}
+finally 
+{
+    if ((Test-FalconToken).Token -eq $true) { Revoke-FalconToken }
 }
