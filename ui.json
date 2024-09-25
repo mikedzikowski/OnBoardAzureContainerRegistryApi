@@ -129,7 +129,7 @@
             "location": "[steps('basics').resourceScope.location.name]",
             "parameters": {
                 "tagsByResource": "[steps('tags').tagsByResource]",
-                "spName": "[steps('sp').ServicePrincipal.appName]",
+                "spName": "[steps('sp').ServicePrincipal.appId]",
                 "spPassword": "[steps('sp').ServicePrincipal.password]",
                 "falconClientId": "[steps('falcon').cid]",
                 "falconClientSecret": "[steps('falcon').secret]"
