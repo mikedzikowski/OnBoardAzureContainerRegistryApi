@@ -8,7 +8,7 @@ graph LR;
     B --> C{New Registry Found?}
     C -- Yes --> D[Onboard to Falcon Cloud Security]
     C -- No --> E[End]
-    D --> E
+    D --> E --> A[Start]
 ```
 
 ## Resources Deployed
