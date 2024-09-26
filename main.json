@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "11778775732680043731"
+      "templateHash": "8440843568323154066"
     }
   },
   "parameters": {
@@ -56,10 +56,11 @@
     }
   },
   "variables": {
+    "arcPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
     "automationAccountName": "[format('aa-acr-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
+    "azureReaderRoleId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
     "cloud": "[environment().name]",
-    "tenantId": "[tenant().tenantId]",
-    "subscriptionId": "[subscription().subscriptionId]",
+    "keyVaultSecretReaderRoleId": "4633458b-17de-408a-b874-0445c86b69e6",
     "psFalconUri": "https://www.powershellgallery.com/api/v2/package/PSFalcon/2.2.7",
     "psFalconVersion": "2.2.7",
     "runbook": [
@@ -68,9 +69,8 @@
         "uri": "https://raw.githubusercontent.com/mikedzikowski/OnBoardAzureContainerRegistryUsingPsFalconApi/refs/heads/main/runbooks/New-AzureContainerRegistration.ps1"
       }
     ],
-    "arcPullRoleId": "7f951dda-4ed3-4680-a7ca-43fe172d538d",
-    "keyVaultSecretReaderRoleId": "4633458b-17de-408a-b874-0445c86b69e6",
-    "azureReaderRoleId": "acdd72a7-3385-48ef-bd42-f606fba81ae7"
+    "subscriptionId": "[subscription().subscriptionId]",
+    "tenantId": "[tenant().tenantId]"
   },
   "resources": [
     {
@@ -90,6 +90,12 @@
         },
         "mode": "Incremental",
         "parameters": {
+          "falconClientId": {
+            "value": "[parameters('falconClientId')]"
+          },
+          "falconClientSecret": {
+            "value": "[parameters('falconClientSecret')]"
+          },
           "keyVaultName": {
             "value": "[format('kv-acr-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]"
           },
@@ -98,12 +104,6 @@
           },
           "spPassword": {
             "value": "[parameters('spPassword')]"
-          },
-          "falconClientId": {
-            "value": "[parameters('falconClientId')]"
-          },
-          "falconClientSecret": {
-            "value": "[parameters('falconClientSecret')]"
           }
         },
         "template": {
@@ -246,6 +246,12 @@
           "automationAccountName": {
             "value": "[variables('automationAccountName')]"
           },
+          "environment": {
+            "value": "[variables('cloud')]"
+          },
+          "keyVaultName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('keyvault-deployment-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.keyVaultName.value]"
+          },
           "location": {
             "value": "[parameters('location')]"
           },
@@ -257,12 +263,6 @@
           },
           "runbookNames": {
             "value": "[variables('runbook')]"
-          },
-          "environment": {
-            "value": "[variables('cloud')]"
-          },
-          "keyVaultName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('keyvault-deployment-{0}', parameters('deploymentNameSuffix'))), '2022-09-01').outputs.keyVaultName.value]"
           },
           "subscriptionId": {
             "value": "[variables('subscriptionId')]"
@@ -278,7 +278,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "1197828706241419965"
+              "templateHash": "11110022569617325497"
             }
           },
           "parameters": {
@@ -387,7 +387,7 @@
               "properties": {
                 "parameters": {
                   "environment": "[parameters('environment')]",
-                  "keyVaultName": "[parameters('keyVaultName')]",
+                  "VaultName": "[parameters('keyVaultName')]",
                   "subscriptionId": "[parameters('subscriptionId')]",
                   "tenantId": "[parameters('tenantId')]"
                 },
