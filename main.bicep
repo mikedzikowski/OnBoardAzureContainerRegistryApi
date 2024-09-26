@@ -23,9 +23,6 @@ param falconClientId string
 @secure()
 param falconClientSecret string
 
-param newSp string 
-
-
 // variables for the deployment
 var arcPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
 var automationAccountName = 'aa-acr-${uniqueString(rg.id)}'
