@@ -42,7 +42,7 @@ Before deploying the resources, ensure you have the following:
 
 ## Post-Deployment
 
-After the deployment is complete, the automation account will run on a schedule. When new Azure Container Registries are found in your subscription they will be on-boarded to Falcon Cloud Security. By default the schedule is set to run everyone one hour.
+After the deployment is complete, the automation account will run on a schedule. When new Azure Container Registries are found in your subscription they will be on-boarded to Falcon Cloud Security. By default the schedule is set to run every one hour.
 
 ## Contributing
 
