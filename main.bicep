@@ -23,6 +23,8 @@ param falconClientId string
 @secure()
 param falconClientSecret string
 
+param newSp string 
+
 
 // variables for the deployment
 var arcPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
@@ -51,11 +53,11 @@ module keyVault 'modules/keyVault.bicep' = {
   name: 'keyvault-deployment-${deploymentNameSuffix}'
   scope: resourceGroup(rg.name)
   params: {
+    falconClientId:falconClientId
+    falconClientSecret:falconClientSecret
     keyVaultName: 'kv-acr-${uniqueString(rg.id)}'
     spName: spName
     spPassword: spPassword
-    falconClientId:falconClientId
-    falconClientSecret:falconClientSecret
   }
 }
 
@@ -64,12 +66,12 @@ module automationAccount 'modules/automationaccount.bicep' = {
   scope: resourceGroup(rg.name)
   params: {
     automationAccountName: automationAccountName
+    environment: cloud
+    keyVaultName: keyVault.outputs.keyVaultName
     location: location
     psFalconUri: psFalconUri
     psFalconVersion: psFalconVersion
     runbookNames: runbook
-    environment: cloud
-    keyVaultName: keyVault.outputs.keyVaultName
     subscriptionId: subscriptionId
     tenantId: tenantId
   }
@@ -100,5 +102,15 @@ module keyVaultSecretReaderAutomationAccount 'modules/roleAssignmentKeyVault.bic
     identityPrincipalId: automationAccount.outputs.aaIdentityId
     keyVaultName: keyVault.outputs.keyVaultName
     roleDefinitionId: keyVaultSecretReaderRoleId
+  }
+}
+
+// add the acrPull role assignment for the selected or created service principal 
+module appIdArcPullRoleAutomationAccount 'modules/rbacPermissions.bicep' =  {
+  name: 'rbac-arcPullRole-${deploymentNameSuffix}'
+  params: {
+    principalId: spName
+    roleId: arcPullRoleId
+    scope: subscriptionId
   }
 }

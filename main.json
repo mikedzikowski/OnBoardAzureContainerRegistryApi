@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "8440843568323154066"
+      "templateHash": "6368896983181119863"
     }
   },
   "parameters": {
@@ -53,6 +53,9 @@
       "metadata": {
         "description": "The client secret for the Falcon API."
       }
+    },
+    "newSp": {
+      "type": "string"
     }
   },
   "variables": {
@@ -387,7 +390,7 @@
               "properties": {
                 "parameters": {
                   "environment": "[parameters('environment')]",
-                  "VaultName": "[parameters('keyVaultName')]",
+                  "vaultName": "[parameters('keyVaultName')]",
                   "subscriptionId": "[parameters('subscriptionId')]",
                   "tenantId": "[parameters('tenantId')]"
                 },
@@ -652,6 +655,79 @@
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('automationaccount-deployment-{0}', parameters('deploymentNameSuffix')))]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('keyvault-deployment-{0}', parameters('deploymentNameSuffix')))]"
       ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('rbac-arcPullRole-{0}', parameters('deploymentNameSuffix'))]",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "principalId": {
+            "value": "[parameters('spName')]"
+          },
+          "roleId": {
+            "value": "[variables('arcPullRoleId')]"
+          },
+          "scope": {
+            "value": "[variables('subscriptionId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.30.23.60470",
+              "templateHash": "3766304686476691287"
+            }
+          },
+          "parameters": {
+            "canDelegate": {
+              "type": "bool",
+              "defaultValue": false
+            },
+            "description": {
+              "type": "string",
+              "defaultValue": "Azure Automation RBAC permissions Required by PSFalcon and Azure Runbooks"
+            },
+            "principalId": {
+              "type": "string"
+            },
+            "roleId": {
+              "type": "string"
+            },
+            "scope": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-04-01-preview",
+              "name": "[guid(parameters('scope'), parameters('principalId'), parameters('roleId'))]",
+              "properties": {
+                "canDelegate": "[parameters('canDelegate')]",
+                "description": "[parameters('description')]",
+                "principalId": "[parameters('principalId')]",
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleId'))]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ],
+          "outputs": {
+            "rbac": {
+              "type": "string",
+              "value": "[reference(subscriptionResourceId('Microsoft.Authorization/roleAssignments', guid(parameters('scope'), parameters('principalId'), parameters('roleId'))), '2020-04-01-preview').roleDefinitionId]"
+            }
+          }
+        }
+      }
     }
   ]
 }
