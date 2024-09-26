@@ -1,4 +1,4 @@
-# Deployment Overview - Azure Container Registry with FalconCloud Security
+# Deployment Overview - Azure Container Registry with Falcon Cloud Security
 
 This repository contains resources to deploy an automation framework to on-board Azure Container Registries to Falcon Cloud Security. The `main.bicep` file is the primary deployment template that provisions the necessary Azure resources.
 
