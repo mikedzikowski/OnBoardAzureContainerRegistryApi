@@ -3,7 +3,7 @@
     "view": {
         "kind": "Form",
         "properties": {
-            "title": "Onboard Azure Container Registry to Falcon Cloud Security",
+            "title": "Automated Onboarding of Azure Container Registries to Falcon Cloud Security",
             "isWizard": true,
             "steps": [
                 {
