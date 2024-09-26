@@ -104,7 +104,7 @@ module keyVaultSecretReaderAutomationAccount 'modules/roleAssignmentKeyVault.bic
 
 // add the acrPull role assignment for the selected or created service principal 
 module appIdArcPullRoleAutomationAccount 'modules/rbacPermissions.bicep' =  {
-  name: 'rbac-arcPullRole-${deploymentNameSuffix}'
+  name: 'appId-rbac-arcPullRole-${deploymentNameSuffix}'
   params: {
     principalId: spName
     roleId: arcPullRoleId
