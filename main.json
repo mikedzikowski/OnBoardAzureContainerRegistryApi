@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "15168674473835945729"
+      "templateHash": "6966706112506083858"
     }
   },
   "parameters": {
@@ -656,7 +656,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
-      "name": "[format('rbac-arcPullRole-{0}', parameters('deploymentNameSuffix'))]",
+      "name": "[format('appId-rbac-arcPullRole-{0}', parameters('deploymentNameSuffix'))]",
       "location": "[deployment().location]",
       "properties": {
         "expressionEvaluationOptions": {
