@@ -8,7 +8,11 @@ The `main.bicep` template deploys the following resources:
 
 - **Resource Group**
 - **Azure Automation Account**
+- **Automation Account Runbook**
+- **Automation Account Schdule**
+- **Automation Account Modules for PSFalcon**
 - **Key Vault**
+- **Key Vault Secrets**
 
 ## PSFalcon PowerShell Module
 
