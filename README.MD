@@ -2,6 +2,21 @@
 
 This repository contains resources to deploy an automation framework to on-board Azure Container Registries to Falcon Cloud Security. The `main.bicep` file is the primary deployment template that provisions the necessary Azure resources.
 
+```mermaid
+graph TD;
+    A[Start] --> B[Scan Azure Container Registries]
+    B --> C{New Registry Found?}
+    C -- Yes --> D[Onboard to Falcon Cloud Security]
+    C -- No --> E[End]
+    D --> E
+```
+
+```sequence
+Alice->Bob: Hello Bob, how are you?
+Note right of Bob: Bob thinks
+Bob-->Alice: I am good thanks!
+```
+
 ## Resources Deployed
 
 The `main.bicep` template deploys the following resources:
