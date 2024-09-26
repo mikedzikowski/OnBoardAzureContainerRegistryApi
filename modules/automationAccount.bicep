@@ -70,7 +70,7 @@ resource jobSchedule 'Microsoft.Automation/automationAccounts/jobSchedules@2023-
   properties:{
     parameters: {
       environment: environment
-      keyVaultName: keyVaultName
+      VaultName: keyVaultName
       subscriptionId: subscriptionId
       tenantId: tenantId
     }
