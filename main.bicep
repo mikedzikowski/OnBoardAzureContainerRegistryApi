@@ -25,10 +25,11 @@ param falconClientSecret string
 
 
 // variables for the deployment
+var arcPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
 var automationAccountName = 'aa-acr-${uniqueString(rg.id)}'
+var azureReaderRoleId = 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
 var cloud = environment().name
-var tenantId = tenant().tenantId
-var subscriptionId = subscription().subscriptionId
+var keyVaultSecretReaderRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
 var psFalconUri = 'https://www.powershellgallery.com/api/v2/package/PSFalcon/2.2.7'
 var psFalconVersion = '2.2.7'
 var runbook = [
@@ -37,9 +38,9 @@ var runbook = [
     uri: 'https://raw.githubusercontent.com/mikedzikowski/OnBoardAzureContainerRegistryUsingPsFalconApi/refs/heads/main/runbooks/New-AzureContainerRegistration.ps1'
   }
 ]
-var arcPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-var keyVaultSecretReaderRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
-var azureReaderRoleId = 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+var subscriptionId = subscription().subscriptionId
+var tenantId = tenant().tenantId
+
 
 resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: resourceGroupName

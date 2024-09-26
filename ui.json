@@ -4,6 +4,7 @@
         "kind": "Form",
         "properties": {
             "title": "Onboard Azure Container Registry to Falcon Cloud Security",
+            "isWizard": true,
             "steps": [
                 {
                     "name": "basics",
@@ -25,13 +26,27 @@
                     "label": "Service Principal",
                     "elements": [
                         {
-                            "name": "spinfo",
-                            "type": "Microsoft.Common.InfoBox",
+                            "name": "newSpinfo",
+                            "type": "Microsoft.Common.TextBlock",
                             "visible": true,
                             "options": {
-                                "icon": "None",
-                                "text": "Please select or create a service principal to be used with this automation soltution. NOTE: Copy and keep the password when creating the service principal. If you are unable to create a service principal, please contact your Azure Entra administrator. For more information, see <a href='https://portal.azure.com' target='_blank'>here</a>.",
-                                "uri": "https://portal.azure.com"
+                                "text": "NOTE: If selected a new service principal may be created for you. Please take note of the password when following the wizard.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/en-us/cli/azure/azure-cli-sp-tutorial-2"
+                                }
+                            }
+                        },
+                        {
+                            "name": "existingSpinfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": true,
+                            "options": {
+                                "text": "NOTE: When using an existing service principal, please ensure the ArcPull role has been applied and please have the password available or create a new password.",
+                                "link": {
+                                    "label": "Learn more",
+                                    "uri": "https://learn.microsoft.com/en-us/cli/azure/azure-cli-sp-tutorial-7?tabs=bash#reset-credentials-returning-output-to-the-console-and-log-file"
+                                }
                             }
                         },
                         {
@@ -48,7 +63,7 @@
                             },
                             "defaultValue": {
                                 "principalId": "<default guid>",
-                                "name": "(New) default App Id"
+                                "name": "<default name>"
                             },
                             "constraints": {
                                 "required": false
