@@ -145,6 +145,7 @@
             "parameters": {
                 "tagsByResource": "[steps('tags').tagsByResource]",
                 "spName": "[steps('sp').ServicePrincipal.appId]",
+                "spObjectId": "[steps('sp').ServicePrincipal.objectId]",
                 "spPassword": "[steps('sp').ServicePrincipal.password]",
                 "falconClientId": "[steps('falcon').cid]",
                 "falconClientSecret": "[steps('falcon').secret]"

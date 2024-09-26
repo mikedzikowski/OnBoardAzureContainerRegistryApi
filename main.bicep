@@ -12,6 +12,8 @@ param resourceGroupName string = 'rg-acr-cs'
 @description('The name of the service principal.')
 param spName string
 
+param spObjectId string
+
 @description('The password for the service principal.')
 @secure()
 param spPassword string
@@ -106,8 +108,14 @@ module keyVaultSecretReaderAutomationAccount 'modules/roleAssignmentKeyVault.bic
 module appIdArcPullRoleAutomationAccount 'modules/rbacPermissions.bicep' =  {
   name: 'appId-rbac-arcPullRole-${deploymentNameSuffix}'
   params: {
-    principalId: spName
+    principalId: spObjectId
     roleId: arcPullRoleId
     scope: subscriptionId
   }
+  dependsOn:[
+      rg
+      automationAccount
+      keyVault
+    ]
 }
+

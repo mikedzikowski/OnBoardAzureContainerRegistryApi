@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "6966706112506083858"
+      "templateHash": "10413343444011302778"
     }
   },
   "parameters": {
@@ -35,6 +35,9 @@
       "metadata": {
         "description": "The name of the service principal."
       }
+    },
+    "spObjectId": {
+      "type": "string"
     },
     "spPassword": {
       "type": "securestring",
@@ -665,7 +668,7 @@
         "mode": "Incremental",
         "parameters": {
           "principalId": {
-            "value": "[parameters('spName')]"
+            "value": "[parameters('spObjectId')]"
           },
           "roleId": {
             "value": "[variables('arcPullRoleId')]"
@@ -724,7 +727,12 @@
             }
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('automationaccount-deployment-{0}', parameters('deploymentNameSuffix')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('keyvault-deployment-{0}', parameters('deploymentNameSuffix')))]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+      ]
     }
   ]
 }
